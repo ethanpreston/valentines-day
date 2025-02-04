@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Adventure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffe6f2;
+            color: #ff3366;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #ff3366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #cc0052;
+        }
+        img {
+            width: 100px;
+            height: auto;
+            margin-top: 10px;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pookie's Valentine's Day Adventure</h1>
+        <p id="story-text">What type of cuisine would you like to eat?</p>
+        <div id="choices"></div>
+        <img id="cat-img" src="./kitty.jpeg" alt="Cute Cat">
+    </div>
+
+    <script>
+        let answers = {};
+
+        const story = {
+            1: { text: "What type of cuisine would you like?", next: 2},
+            2: { text: "What time would you like to eat?", next: 3 },
+            3: { text: "What restaurant should we eat at?", next: 4 },
+            4: { text: "Would you like some flowers?", next: 5},
+            5: { text: "What should I wear?", next: 6 },
+            6: { text: "Last question: Will you be my Valentine? ❤️", next: 'end' }
+        };
+
+        function nextStep(step) {
+            const storyText = document.getElementById("story-text");
+            const choicesDiv = document.getElementById("choices");
+            const catImg = document.getElementById("cat-img");
+            
+            if (!story[step] && step !== 'end') {
+                console.error("Invalid step: ", step);
+                return;
+            }
+            
+            if (step === 'end') {
+                storyText.innerHTML = `Yay! Happy Valentine's Day! 💖 <br><br> Your choices: <br>
+                Cuisine: ${answers[1] || "Not selected"}<br>
+                Time: ${answers[2] || "Not selected"}<br>
+                Restaurant: ${answers[3] || "Not selected"}<br>
+                Flowers: ${answers[4] || "Not selected"}<br>
+                Outfit: ${answers[5] || "Not selected"}`;
+                choicesDiv.innerHTML = "<p>🎉🎊💘</p>";
+                return;
+            }
+            
+            const stepData = story[step];
+            storyText.innerHTML = stepData.text;
+            choicesDiv.innerHTML = "";
+            
+            if (stepData.choices) {
+                stepData.choices.forEach(choice => {
+                    const button = document.createElement("button");
+                    button.innerText = choice.text;
+                    button.onclick = () => nextStep(choice.next);
+                    choicesDiv.appendChild(button);
+                });
+            } else {
+                const inputField = document.createElement("input");
+                inputField.type = "text";
+                inputField.placeholder = "Type your answer here...";
+                inputField.id = "user-input";
+                
+                const nextButton = document.createElement("button");
+                nextButton.innerText = "Next";
+                nextButton.onclick = () => {
+                    const userResponse = inputField.value.trim();
+                    if (userResponse) {
+                        answers[step] = userResponse;
+                    }
+                    nextStep(story[step].next);
+                };
+                
+                choicesDiv.appendChild(inputField);
+                choicesDiv.appendChild(nextButton);
+            }
+            
+            catImg.src = "./kitty.jpeg";
+        }
+        
+        nextStep(1);
+    </script>
+</body>
+</html>
